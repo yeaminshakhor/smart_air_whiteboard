@@ -164,6 +164,7 @@ class GestureWhiteboard:
             "ui_select": self.config.get("gesture", "UI_SELECT_HOLD_MS", 120),
         }
         self.ui_select_cooldown_ms = self.config.get("gesture", "UI_SELECT_COOLDOWN_MS", 450)
+        self.last_ui_select_ms = 0
 
         self.debug_overlay = self.state.get("debug_overlay", True)
         self.debug_state = {
@@ -269,7 +270,8 @@ class GestureWhiteboard:
                     "brush_size": 0,
                 })
 
-            self.pages.update_current_page(self.canvas.get_canvas_with_items())
+            if self.canvas.is_dirty:
+                self.pages.update_current_page(self.canvas.get_canvas_with_items())
             self.debug_state["mode"] = get_mode(self)
             display_frame = self._render_display(frame)
             cv2.imshow(self.window_name, display_frame)
@@ -367,8 +369,13 @@ class GestureWhiteboard:
     ) -> None:
         if gesture == "index_finger":
             if self.ui.is_point_over_ui(pos[0], pos[1]):
+                now_ms = int(time.time() * 1000)
+                if now_ms - self.last_ui_select_ms < self.ui_select_cooldown_ms:
+                    return
                 ui_action = self.ui.handle_click(pos, select_enabled=True)
-                self._apply_ui_action(ui_action, pos)
+                if ui_action is not None:
+                    self.last_ui_select_ms = now_ms
+                    self._apply_ui_action(ui_action, pos)
                 return
 
             self._set_mode("drawing")
@@ -556,6 +563,8 @@ class GestureWhiteboard:
         if self.prev_pos is not None and distance(self.prev_pos, pos) > self.nav_stationary_px:
             return False
         self.state.set("last_nav_ms", now_ms)
+        # Reset hold timer to prevent repeated triggering
+        self.thumb_hold_start_ms = now_ms
         return True
 
     def _can_start_grab(self, pos: Tuple[int, int]) -> bool:
@@ -728,12 +737,13 @@ class GestureWhiteboard:
         if canvas_img.shape[0] != self.height or canvas_img.shape[1] != self.width:
             canvas_img = cv2.resize(canvas_img, (self.width, self.height))
 
-        self._bg_buffer[:] = 0
-        background = self._bg_buffer
+        background = camera_frame
 
-        alpha = canvas_img[:, :, 3:4].astype(np.float32) / 255.0
-        canvas_rgb = canvas_img[:, :, :3].astype(np.float32)
-        background[:] = (alpha * canvas_rgb + (1.0 - alpha) * background.astype(np.float32)).astype(np.uint8)
+        alpha = (canvas_img[:, :, 3:4].astype(np.float32) / 255.0)
+        canvas_rgb = canvas_img[:, :, :3]
+
+        # Efficient alpha blending using NumPy
+        background[:] = (alpha * canvas_rgb + (1.0 - alpha) * background).astype(np.uint8)
 
         page_str = f"Page: {self.pages.current_index + 1}/{len(self.pages.pages)}"
         self.ui.draw_panels(

@@ -14,6 +14,8 @@ class CanvasEngine:
         self.MAX_HISTORY = 20
         self._history = deque([self._copy_state((self.canvas, self.items))], maxlen=self.MAX_HISTORY)
         self._history_index = 0
+        self._dirty = True
+        self._cached_composite = None
         import logging; logging.getLogger(__name__).info("Initializing CanvasEngine")
 
     def draw_line(self, start_pos, end_pos, color, thickness):
@@ -22,6 +24,7 @@ class CanvasEngine:
             p1 = (int(round(start_pos[0])), int(round(start_pos[1])))
             p2 = (int(round(end_pos[0])), int(round(end_pos[1])))
             cv2.line(self.canvas, p1, p2, color, thickness)
+            self._dirty = True
 
     def add_item(self, item):
         """Adds a movable item (text, image) to the canvas."""
@@ -46,11 +49,13 @@ class CanvasEngine:
             self.items = [item for item in self.items if item.get('id') != target_id]
         else:
             self.items = [item for item in self.items if item is not item_to_remove]
+        self._dirty = True
 
     def erase(self, pos, radius):
         """Erases both the base canvas and any items at the position."""
         # Erase from the base canvas
         cv2.circle(self.canvas, pos, radius, (0, 0, 0, 0), -1)
+        self._dirty = True
 
         # Erase items
         items_to_remove = []
@@ -72,6 +77,7 @@ class CanvasEngine:
         p1 = (int(round(start_pos[0])), int(round(start_pos[1])))
         p2 = (int(round(end_pos[0])), int(round(end_pos[1])))
         cv2.line(self.canvas, p1, p2, (0, 0, 0, 0), radius * 2)
+        self._dirty = True
 
         # Remove items intersecting the eraser stroke segment.
         for item in self.items[:]:
@@ -80,17 +86,26 @@ class CanvasEngine:
 
         self.erase(p2, radius)
 
+    @property
+    def is_dirty(self) -> bool:
+        return self._dirty
+
     def get_canvas_with_items(self):
         """Renders items on top of the base canvas and returns the result."""
-        composite = self.canvas.copy()
+        if not self._dirty and self._cached_composite is not None:
+            return self._cached_composite
+
+        self._cached_composite = self.canvas.copy()
         for item in self.items:
-            self._render_item(composite, item)
-        return composite
+            self._render_item(self._cached_composite, item)
+        self._dirty = False
+        return self._cached_composite
 
     def clear_canvas(self):
         """Clears both the base canvas and all items."""
         self.canvas.fill(0)
         self.items.clear()
+        self._dirty = True
         self.record_history()
 
     def undo(self):
@@ -98,9 +113,11 @@ class CanvasEngine:
         if self._history_index > 0:
             self._history_index -= 1
             self.canvas, self.items = self._copy_state(list(self._history)[self._history_index])
+            self._dirty = True
 
     def record_history(self):
         """Saves the current canvas and item state to the history."""
+        self._dirty = True
         # Truncate forward history on new action after undo
         history_list = list(self._history)
         history_list = history_list[: self._history_index + 1]
@@ -128,6 +145,7 @@ class CanvasEngine:
         if x_start < x_end and y_start < y_end:
             # We copy to base canvas
             self.canvas[y_start:y_end, x_start:x_end] = img[img_y_start:img_y_end, img_x_start:img_x_end]
+            self._dirty = True
 
     def _render_item(self, canvas, item):
         """Renders a single item onto a canvas."""
