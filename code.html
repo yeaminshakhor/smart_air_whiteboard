@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GestBoard | Pro Studio Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#bdcac2",
+                        "outline": "#87948d",
+                        "primary-fixed": "#8af7cf",
+                        "secondary-fixed": "#c2ecd9",
+                        "on-tertiary-fixed": "#3c0700",
+                        "surface-container-low": "#1c1b1b",
+                        "on-background": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "surface-tint": "#6edab4",
+                        "outline-variant": "#3d4944",
+                        "surface-container": "#201f1f",
+                        "inverse-on-surface": "#313030",
+                        "on-primary-container": "#00523e",
+                        "background": "#000000",
+                        "on-secondary": "#0f372a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary-fixed-variant": "#00513d",
+                        "on-primary-fixed": "#002117",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#a6cfbd",
+                        "surface-bright": "#3a3939",
+                        "on-secondary-fixed": "#002117",
+                        "on-error": "#690005",
+                        "primary-container": "#5DCAA5",
+                        "surface": "#131313",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-container": "#783322",
+                        "tertiary-fixed-dim": "#ffb4a2",
+                        "on-secondary-fixed-variant": "#284e40",
+                        "secondary-container": "#284e40",
+                        "on-tertiary": "#591c0d",
+                        "on-tertiary-fixed-variant": "#773220",
+                        "primary-fixed-dim": "#6edab4",
+                        "on-secondary-container": "#95beac",
+                        "tertiary": "#ffc6b8",
+                        "tertiary-fixed": "#ffdad2",
+                        "surface-dim": "#131313",
+                        "tertiary-container": "#ff9e86",
+                        "primary": "#5DCAA5",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#006c52",
+                        "on-primary": "#003829",
+                        "surface-container-highest": "#353534",
+                        "secondary-fixed-dim": "#a6cfbd"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(14, 14, 14, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .kinetic-glow {
+            box-shadow: 0 0 20px rgba(93, 202, 165, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-[#000000] text-on-background font-body overflow-hidden selection:bg-primary/30 h-screen w-screen">
+<!-- CANVAS / BACKGROUND -->
+<div class="fixed inset-0 z-0 bg-[#000000]">
+<!-- Abstract HUD Grid Overlay -->
+<div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#000000_90%)] pointer-events-none opacity-60"></div>
+</div>
+<!-- TOP APP BAR -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-14 bg-[#0E0E0E]/60 backdrop-blur-xl shadow-[0_0_40px_rgba(93,202,165,0.1)]">
+<div class="flex items-center gap-6">
+<span class="text-lg font-bold text-[#E5E2E1] tracking-widest font-headline">GestBoard</span>
+<div class="h-4 w-[1px] bg-outline-variant/30"></div>
+<nav class="flex items-center gap-2 font-headline tracking-tight text-sm uppercase">
+<button class="bg-[#5DCAA5] text-[#003829] rounded-full px-4 py-1 transition-all duration-300 scale-95 active:scale-90 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#003829] animate-pulse"></span>
+                    Draw
+                </button>
+<button class="text-[#E5E2E1]/60 px-4 py-1 hover:text-[#E5E2E1] transition-all duration-300">Erase</button>
+<button class="text-[#E5E2E1]/60 px-4 py-1 hover:text-[#E5E2E1] transition-all duration-300">Write</button>
+</nav>
+</div>
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 bg-surface-container-lowest/40 px-3 py-1 rounded-full border border-outline-variant/10">
+<span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[10px] uppercase tracking-widest font-medium text-on-surface-variant">Hand Detected</span>
+</div>
+<div class="flex gap-4 text-[#E5E2E1]/60">
+<span class="material-symbols-outlined hover:text-primary transition-colors cursor-pointer" data-icon="keyboard_command_key">keyboard_command_key</span>
+<span class="material-symbols-outlined hover:text-primary transition-colors cursor-pointer" data-icon="history">history</span>
+<span class="material-symbols-outlined hover:text-primary transition-colors cursor-pointer" data-icon="settings">settings</span>
+</div>
+</div>
+</header>
+<!-- LEFT TOOL RAIL -->
+<aside class="fixed left-6 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center py-8 gap-6 bg-[#0E0E0E]/60 backdrop-blur-xl rounded-full w-16 shadow-2xl border border-outline-variant/5">
+<div class="flex flex-col items-center gap-2">
+<button class="bg-[#5DCAA5] text-[#003829] rounded-full p-3 transition-transform duration-200 hover:scale-110 shadow-[0_0_15px_rgba(93,202,165,0.4)]">
+<span class="material-symbols-outlined" data-icon="brush" style="font-variation-settings: 'FILL' 1;">brush</span>
+</button>
+<button class="text-[#E5E2E1]/40 p-3 hover:text-[#5DCAA5] transition-transform duration-200 hover:scale-110">
+<span class="material-symbols-outlined" data-icon="ink_eraser">ink_eraser</span>
+</button>
+</div>
+<div class="w-6 h-[1px] bg-outline-variant/20"></div>
+<div class="flex flex-col gap-3">
+<div class="w-4 h-4 rounded-full bg-primary ring-2 ring-primary/30 ring-offset-2 ring-offset-background cursor-pointer"></div>
+<div class="w-4 h-4 rounded-full bg-white opacity-60 hover:opacity-100 transition-opacity cursor-pointer"></div>
+<div class="w-4 h-4 rounded-full bg-red-500 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"></div>
+<div class="w-4 h-4 rounded-full bg-yellow-400 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"></div>
+<div class="w-4 h-4 rounded-full bg-blue-500 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"></div>
+</div>
+<div class="w-6 h-[1px] bg-outline-variant/20"></div>
+<div class="flex flex-col gap-4 text-[#E5E2E1]/40">
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="line_weight">line_weight</span>
+</button>
+<button class="text-primary scale-110">
+<span class="material-symbols-outlined text-[24px]" data-icon="line_weight">line_weight</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[30px]" data-icon="line_weight">line_weight</span>
+</button>
+</div>
+</aside>
+<!-- MAIN CONTENT AREA (FLOATING NODES) -->
+<main class="relative h-full w-full pointer-events-none">
+<!-- Center Focus Ring (Visual Guide) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-primary/20 rounded-full flex items-center justify-center opacity-40">
+<div class="w-1 h-1 bg-primary rounded-full"></div>
+</div>
+<!-- RIGHT PANEL - HUD CARDS -->
+<div class="fixed right-8 top-24 bottom-24 w-72 flex flex-col gap-6 pointer-events-auto">
+<!-- GESTURE LEGEND -->
+<div class="glass-panel p-6 rounded-lg border border-outline-variant/10 kinetic-glow">
+<h3 class="font-headline text-[10px] tracking-[0.2em] uppercase text-primary mb-6">Gesture Legend</h3>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary" data-icon="draw" style="font-variation-settings: 'FILL' 1;">draw</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface uppercase tracking-wider">Draw</p>
+<p class="text-[10px] text-on-surface-variant">Index finger extended</p>
+</div>
+</div>
+<div class="flex items-center gap-4 opacity-40">
+<div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-white" data-icon="ink_eraser">ink_eraser</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface uppercase tracking-wider">Erase</p>
+<p class="text-[10px] text-on-surface-variant">Full palm open</p>
+</div>
+</div>
+<div class="flex items-center gap-4 opacity-40">
+<div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-white" data-icon="ads_click">ads_click</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface uppercase tracking-wider">Select</p>
+<p class="text-[10px] text-on-surface-variant">Pinch gesture</p>
+</div>
+</div>
+</div>
+</div>
+<!-- PAGE NAVIGATOR -->
+<div class="glass-panel px-6 py-4 rounded-lg border border-outline-variant/10 flex items-center justify-between">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">Page Index</span>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant/20"></div>
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#5DCAA5]"></div>
+<div class="w-2 h-2 rounded-full bg-on-surface-variant/20"></div>
+<div class="w-2 h-2 rounded-full bg-on-surface-variant/20"></div>
+</div>
+</div>
+<!-- CLIPBOARD -->
+<div class="glass-panel p-6 rounded-lg border border-outline-variant/10 mt-auto">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline text-[10px] tracking-[0.2em] uppercase text-on-surface-variant">Clipboard</h3>
+<span class="material-symbols-outlined text-sm opacity-40" data-icon="more_horiz">more_horiz</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div class="aspect-square rounded bg-surface-container-highest/50 border border-outline-variant/10 flex items-center justify-center relative overflow-hidden group hover:border-primary/40 transition-colors">
+<svg class="w-8 h-8 text-primary/40" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 40 40">
+<path d="M10 20C15 10 25 30 30 20" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="aspect-square rounded bg-surface-container-highest/50 border border-outline-variant/10 flex items-center justify-center relative overflow-hidden group hover:border-primary/40 transition-colors">
+<svg class="w-8 h-8 text-primary/40" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 40 40">
+<circle cx="20" cy="20" r="10" stroke-linecap="round" stroke-linejoin="round"></circle>
+</svg>
+</div>
+<div class="aspect-square rounded bg-surface-container-highest/50 border border-outline-variant/10 flex items-center justify-center relative overflow-hidden group hover:border-primary/40 transition-colors">
+<svg class="w-8 h-8 text-primary/40" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 40 40">
+<rect height="16" stroke-linecap="round" stroke-linejoin="round" width="16" x="12" y="12"></rect>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FOOTER / SHORTCUT RAIL -->
+<footer class="fixed bottom-4 left-0 w-full z-40 flex justify-center items-center opacity-50 pointer-events-none">
+<div class="px-8 py-2 rounded-full font-label text-[9px] font-medium tracking-[0.2em] uppercase text-[#E5E2E1]/30 flex gap-8 backdrop-blur-sm">
+<span>GESTURE ENGINE v1.0</span>
+<div class="flex gap-4">
+<span class="text-[#5DCAA5]">CMD+Z UNDO</span>
+<span class="text-[#5DCAA5]">CMD+S SAVE</span>
+<span class="text-[#5DCAA5]">CMD+G GROUP</span>
+</div>
+<div class="flex gap-4">
+<span>Status: Online</span>
+<span>Latency: 12ms</span>
+</div>
+</div>
+</footer>
+<!-- GESTURE INTERFACE MOCKUP OVERLAY (Non-interactive visual depth) -->
+<div class="fixed inset-0 pointer-events-none z-10 border-[16px] border-[#0E0E0E]/20"></div>
+</body></html>

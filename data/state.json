@@ -1,0 +1,29 @@
+{
+  "mode": "erasing",
+  "tool": "brush",
+  "color": [
+    255,
+    255,
+    255
+  ],
+  "brush_size": 8,
+  "brush_opacity": 1.0,
+  "current_page": 0,
+  "is_drawing": false,
+  "prev_pos": null,
+  "last_position": null,
+  "clipboard_visible": false,
+  "palette_visible": true,
+  "context_menu_visible": false,
+  "recording": false,
+  "grabbing": false,
+  "active_grab": null,
+  "grab_offset": [
+    0,
+    0
+  ],
+  "grab_path": [],
+  "last_copy_ms": 0,
+  "last_nav_ms": 0,
+  "debug_overlay": true
+}

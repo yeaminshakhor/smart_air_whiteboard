@@ -1,0 +1,15 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv313/bin/python",
+  "python.analysis.typeCheckingMode": "basic",
+  "cursorpyright.analysis.typeCheckingMode": "basic",
+  "python.analysis.exclude": [
+    "**/.venv/**",
+    "**/.venv313/**",
+    "**/__pycache__/**"
+  ],
+  "cursorpyright.analysis.exclude": [
+    "**/.venv/**",
+    "**/.venv313/**",
+    "**/__pycache__/**"
+  ]
+}

@@ -1,0 +1,13 @@
+# Placeholder for requirements
+opencv-python
+mediapipe
+numpy
+Pillow
+PyYAML
+fastapi
+uvicorn
+# Optional for handwriting model loading (character_model.h5):
+# tensorflow-cpu
+# Optional for feature-based handwriting classifier:
+# scikit-learn
+
