@@ -161,10 +161,13 @@ class GestureRecognizer:
             and all(extended[name] for name in ("index", "middle", "ring", "pinky"))
             and not extended["thumb"]
         ):
-            confidence = 1.0 - min(1.0, sum(curls[name] for name in ("index", "middle", "ring", "pinky")) / 400.0)
-            return "four_fingers", max(0.58, confidence)
+            # For writing, we want a very clear curled thumb.
+            if curls["thumb"] >= 65.0:
+                confidence = 1.0 - min(1.0, sum(curls[name] for name in ("index", "middle", "ring", "pinky")) / 400.0)
+                return "four_fingers", max(0.65, confidence)
 
         if finger_count >= 4 and self._is_open_palm(landmarks, curls):
+            # Open palm should have extended fingers AND thumb.
             palm_conf = 1.0 - min(1.0, avg_non_thumb_curl / 120.0)
             return "open_hand", max(0.6, palm_conf)
 
@@ -197,18 +200,24 @@ class GestureRecognizer:
         return None
 
     def _is_open_palm(self, landmarks: List[Tuple[int, int]], curls: Dict[str, float]) -> bool:
-        non_thumb_extended = all(curls[name] <= 45.0 for name in ("index", "middle", "ring", "pinky"))
-        if not non_thumb_extended:
+        # Require all 5 fingers to be relatively extended for a true open palm erase.
+        all_extended = all(curls[name] <= 45.0 for name in ("thumb", "index", "middle", "ring", "pinky"))
+        if not all_extended:
             return False
+
         tip_indices = [4, 8, 12, 16, 20]
         tips = [landmarks[idx] for idx in tip_indices]
         palm_width = max(1.0, float(np.linalg.norm(np.array(landmarks[17]) - np.array(landmarks[5]))))
+
+        # Calculate separations between adjacent finger tips.
         separations = []
         for i in range(len(tips) - 1):
             delta = np.array(tips[i + 1]) - np.array(tips[i])
             separations.append(float(np.linalg.norm(delta) / palm_width))
+
+        # Open hand should have significant separation between fingers.
         mean_sep = float(sum(separations) / max(1, len(separations)))
-        return mean_sep >= 0.25
+        return mean_sep >= 0.35  # Increased from 0.25 for better discrimination
 
     def _is_scroll_gesture(self, landmarks: List[Tuple[int, int]], handedness: Optional[str]) -> bool:
         _ = handedness

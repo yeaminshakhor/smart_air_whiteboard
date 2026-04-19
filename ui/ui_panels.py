@@ -115,9 +115,7 @@ class UIManager:
         self.hit_boxes.clear()
 
         draw_glass_panel(frame, 0, 0, self.width, 56, alpha=0.6, tint=SURFACE)
-        cv2.line(frame, (0, 56), (self.width, 56), (0, 0, 0), 1)
         cv2.putText(frame, "GestBoard", (24, 34), cv2.FONT_HERSHEY_SIMPLEX, 0.7, ON_SURFACE, 2)
-        cv2.line(frame, (150, 18), (150, 40), OUTLINE_VARIANT, 1)
 
         nav_x, nav_y, pill_h = 170, 14, 28
         for mode_key, label in [("drawing", "Draw"), ("erasing", "Erase"), ("writing", "Write")]:
@@ -136,24 +134,20 @@ class UIManager:
         status_w = 170
         status_x = self.width - status_w - 16
         _rounded_rect(frame, status_x, 14, status_w, 28, r=14, color=(10, 10, 10))
-        _rounded_rect(frame, status_x, 14, status_w, 28, r=14, color=OUTLINE_VARIANT, thickness=1)
         cv2.circle(frame, (status_x + 16, 28), 4, PRIMARY, -1)
         cv2.putText(frame, "HAND DETECTED", (status_x + 28, 32), cv2.FONT_HERSHEY_SIMPLEX, 0.45, ON_SURFACE_VARIANT, 1)
 
         draw_glass_panel(frame, self.rail_x, self.rail_y, self.rail_w, self.rail_h, alpha=0.6, tint=SURFACE)
-        _rounded_rect(frame, self.rail_x, self.rail_y, self.rail_w, self.rail_h, r=28, color=OUTLINE_VARIANT, thickness=1)
 
         if self.palette_visible:
             cy = self.rail_y + 30
             for _name, bgr in self.colors:
                 cx = self.rail_x + self.rail_w // 2
                 cv2.circle(frame, (cx, cy), 11, bgr, -1)
-                cv2.circle(frame, (cx, cy), 11, OUTLINE_VARIANT, 1)
                 self.hit_boxes.append((self.rail_x, cy - 14, self.rail_w, 28, "color", bgr))
                 cy += 38
 
         draw_glass_panel(frame, self.hud_x, self.hud_y, self.hud_w, self.hud_h, alpha=0.6, tint=SURFACE)
-        _rounded_rect(frame, self.hud_x, self.hud_y, self.hud_w, self.hud_h, r=18, color=OUTLINE_VARIANT, thickness=1)
 
         cv2.putText(frame, "GESTURE LEGEND", (self.hud_x + 18, self.hud_y + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.45, PRIMARY, 1)
 
@@ -179,7 +173,6 @@ class UIManager:
         slots = [(self.hud_x + 18 + i * (cell + gap), grid_y) for i in range(3)]
         for sx, sy in slots:
             _rounded_rect(frame, sx, sy, cell, cell, r=10, color=(30, 30, 30))
-            _rounded_rect(frame, sx, sy, cell, cell, r=10, color=OUTLINE_VARIANT, thickness=1)
 
         if self.clipboard_visible:
             for i, item in enumerate(self.clipboard_items[:3]):
@@ -197,7 +190,6 @@ class UIManager:
 
         paste_y = self.hud_y + self.hud_h - 44
         _rounded_rect(frame, self.hud_x + 18, paste_y, self.hud_w - 36, 28, r=14, color=(20, 20, 20))
-        _rounded_rect(frame, self.hud_x + 18, paste_y, self.hud_w - 36, 28, r=14, color=OUTLINE_VARIANT, thickness=1)
         cv2.putText(frame, "PASTE IMAGE", (self.hud_x + 76, paste_y + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.45, ON_SURFACE, 1)
         self.hit_boxes.append((self.hud_x + 18, paste_y, self.hud_w - 36, 28, "action", "paste"))
 
